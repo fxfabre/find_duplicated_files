@@ -1,4 +1,5 @@
 alembic
+autopep8
 python-dotenv
 pandas
 pathlib
