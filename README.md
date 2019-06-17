@@ -2,8 +2,8 @@
 
 ### Set up python virtual env:
 ```bash
-python3 -m venv .venv_find_duplicated_files
-source .venv_find_duplicated_files/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
