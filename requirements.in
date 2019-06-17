@@ -1,5 +1,6 @@
 alembic
 autopep8
+flake8-isort
 python-dotenv
 pandas
 pathlib
