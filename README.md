@@ -20,7 +20,7 @@ FOLDER_DOCUMENTS='/home/user/Documents/some_folder'
 
 ### Set up Postgres database
 ```bash
-docker-compose up &
+docker-compose up -d
 ```
 
 ### Run
