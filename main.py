@@ -40,9 +40,13 @@ class DuplicateFilesFinder:
             print(root)
             files = [f for f in files if f not in FILES_TO_IGNORE]
             for file_name in files:
-                file_path = os.path.join(root, file_name)
-                if self.keep_file(file_path):
-                    yield root, file_name, self.get_hashs_for_file(file_path)
+                try:
+                    file_path = os.path.join(root, file_name)
+                    if self.keep_file(file_path):
+                        yield root, file_name, self.get_hashs_for_file(file_path)
+                except FileNotFoundError as e:
+                    print(e)
+                    print(file_path)
 
     def get_hashs_for_file(self, fname):
         hashs = {func_name: func() for func_name, func in self.hash_functions.items()}
