@@ -10,6 +10,7 @@ from sqlalchemy import create_engine
 FILES_TO_IGNORE = ['.DS_Store']
 hash_functions = {'md5': hashlib.md5, 'sha256': hashlib.sha256}
 SIZE_READ = 1024 * 1024
+FOLDER_DOCUMENTS = os.getenv('FOLDER_DOCUMENTS')
 
 
 def get_engine():
@@ -28,9 +29,8 @@ def get_hashs_for_file(fname):
 
 
 def get_hashs():
-    folder_documents = os.getenv('FOLDER_DOCUMENTS')
-    print('folder', folder_documents)
-    for root, dirs, files in os.walk(folder_documents):
+    print('folder', FOLDER_DOCUMENTS)
+    for root, dirs, files in os.walk(FOLDER_DOCUMENTS):
         print(root)
         files = [f for f in files if f not in FILES_TO_IGNORE]
         for file_name in files:
@@ -44,7 +44,7 @@ def create_record(folder, file_name, hash_info):
     return dict({
         'size': os.path.getsize(os.path.join(folder, file_name)),
         'name': file_name,
-        'folder': folder,
+        'folder': os.path.relpath(folder, FOLDER_DOCUMENTS),
     }, **hash_info)
 
 
