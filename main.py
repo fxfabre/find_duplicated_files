@@ -22,14 +22,17 @@ class DuplicateFilesFinder:
     def main(self):
         files_info = []
         for folder, file_name, hash_info in self.get_hashs():
-            files_info.append(self.create_record(folder, file_name, hash_info))
+            try:
+                files_info.append(self.create_record(folder, file_name, hash_info))
+            except FileNotFoundError:
+                pass
 
         df_files_info = pd.DataFrame(files_info)
-        df_files_info.to_sql('files_info', self.engine, if_exists='replace', index=False)
+        self.save_to_db(df_files_info, 'files_info')
 
         # find duplicated
         df_duplicated = df_files_info[df_files_info.duplicated(subset=['size'] + list(self.hash_functions.keys()))]
-        df_duplicated.to_sql('duplicated_files', self.engine, if_exists='replace', index=False)
+        self.save_to_db(df_duplicated, 'duplicated_files')
 
         print('duplicated :')
         print(df_duplicated)
@@ -66,6 +69,12 @@ class DuplicateFilesFinder:
             'name': file_name,
             'folder': os.path.relpath(folder, self.folder_documents),
         }, **hash_info)
+
+    def save_to_db(self, df: pd.DataFrame, table_name: str):
+        try:
+            df.to_sql(table_name, self.engine, if_exists='replace', index=False)
+        except Exception:
+            df.to_csv(table_name + '.csv', index=False)
 
     @property
     def engine(self):
