@@ -5,6 +5,7 @@ import hashlib
 import pandas as pd
 from dotenv import load_dotenv
 from pathlib import Path
+import traceback
 from sqlalchemy import create_engine
 
 FILES_TO_IGNORE = ['.DS_Store']
@@ -75,7 +76,9 @@ class DuplicateFilesFinder:
     def save_to_db(self, df: pd.DataFrame, table_name: str):
         try:
             df.to_sql(table_name, self.engine, if_exists='replace', index=False)
-        except Exception:
+        except Exception as e:
+            traceback.print_tb(e.__traceback__)
+            print(e)
             df.to_csv(table_name + '.csv', index=False)
 
     def drop_duplicated_files(self, df: pd.DataFrame):
