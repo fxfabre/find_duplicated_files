@@ -34,6 +34,8 @@ class DuplicateFilesFinder:
         df_duplicated = df_files_info[df_files_info.duplicated(subset=['size'] + list(self.hash_functions.keys()))]
         self.save_to_db(df_duplicated, 'duplicated_files')
 
+        self.drop_duplicated_files(df_files_info)
+
         print('duplicated :')
         print(df_duplicated)
 
@@ -75,6 +77,19 @@ class DuplicateFilesFinder:
             df.to_sql(table_name, self.engine, if_exists='replace', index=False)
         except Exception:
             df.to_csv(table_name + '.csv', index=False)
+
+    def drop_duplicated_files(self, df: pd.DataFrame):
+        """
+        Drop files with:
+        - the shortest folder : longest folder often have useless names like 'to_sort' or 'to_clean'
+        - the longest name : keep maximum information
+        """
+        df['name_len'] = -df['name'].map(len)
+        df['folder_len'] = df['folder'].map(len)
+        for files_info, sub_df in df.groupby(['size'] + list(self.hash_functions.keys())):
+            sub_df = sub_df.sort_values(['folder_len', 'name_len'])
+            for idx, row in sub_df.iloc[1:, :].iterrows():
+                print('remove', row['folder'], row['name'])
 
     @property
     def engine(self):
