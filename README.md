@@ -11,11 +11,13 @@ pip install -r requirements.txt
 Create a file named `.env` with the following variables, and change the values:
 - POSTGRES_PASSWORD : the password to create / access the postgres db
 - FOLDER_DOCUMENTS : the path to the folder where you want to find duplicated files
+- TRASH_FOLDER : where to move the duplicated files
 
 example :
 ```
 POSTGRES_PASSWORD=your_postgres_password
 FOLDER_DOCUMENTS='/home/user/Documents/some_folder'
+TRASH_FOLDER='/tmp/trash_folder'
 ```
 
 ### Set up Postgres database

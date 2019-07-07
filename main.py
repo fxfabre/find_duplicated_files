@@ -2,6 +2,7 @@
 
 import os
 import hashlib
+# import shutil
 import pandas as pd
 from dotenv import load_dotenv
 from pathlib import Path
@@ -92,7 +93,15 @@ class DuplicateFilesFinder:
         for files_info, sub_df in df.groupby(['size'] + list(self.hash_functions.keys())):
             sub_df = sub_df.sort_values(['folder_len', 'name_len'])
             for idx, row in sub_df.iloc[1:, :].iterrows():
-                print('remove', row['folder'], row['name'])
+                self.trash_file(row['folder'], row['name'])
+
+    def trash_file(self, source_folder, file_name):
+        trash_folder = os.getenv('TRASH_FOLDER')
+        if trash_folder:
+            source_path = os.path.join(source_folder, file_name)
+            target_path = os.path.join(trash_folder, file_name)
+            print("move", source_path, target_path)
+            # shutil.move(source_path, target_path)
 
     @property
     def engine(self):
