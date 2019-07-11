@@ -2,7 +2,7 @@
 
 import os
 import hashlib
-# import shutil
+import shutil
 import pandas as pd
 from dotenv import load_dotenv
 from pathlib import Path
@@ -11,6 +11,7 @@ from sqlalchemy import create_engine
 
 FILES_TO_IGNORE = ['.DS_Store']
 SIZE_READ = 1024 * 1024
+MIN_FILE_SIZE = 1e6
 
 
 class DuplicateFilesFinder:
@@ -19,6 +20,7 @@ class DuplicateFilesFinder:
         super(DuplicateFilesFinder, self).__init__()
         load_dotenv(dotenv_path=Path.cwd() / '.env')
         self._engine = None
+        self._trash_folder = None
         self.hash_functions = {'md5': hashlib.md5, 'sha256': hashlib.sha256}
 
     def main(self):
@@ -65,7 +67,7 @@ class DuplicateFilesFinder:
         return {hash_name: hash_func.hexdigest() for hash_name, hash_func in hashs.items()}
 
     def keep_file(self, file_path):
-        return os.path.getsize(file_path) > 1e6
+        return os.path.getsize(file_path) > MIN_FILE_SIZE
 
     def create_record(self, folder, file_name, hash_info):
         return dict({
@@ -96,12 +98,18 @@ class DuplicateFilesFinder:
                 self.trash_file(row['folder'], row['name'])
 
     def trash_file(self, source_folder, file_name):
-        trash_folder = os.getenv('TRASH_FOLDER')
-        if trash_folder:
-            source_path = os.path.join(source_folder, file_name)
-            target_path = os.path.join(trash_folder, file_name)
+        if self.trash_folder:
+            source_path = os.path.join(self.folder_documents, source_folder, file_name)
+            target_path = os.path.join(self.trash_folder, file_name)
             print("move", source_path, target_path)
-            # shutil.move(source_path, target_path)
+            shutil.move(source_path, target_path)
+
+    @property
+    def trash_folder(self):
+        if self._trash_folder is None:
+            self._trash_folder = os.getenv('TRASH_FOLDER')
+            os.makedirs(self._trash_folder, exist_ok=True)
+        return self._trash_folder
 
     @property
     def engine(self):
