@@ -5,8 +5,6 @@ services:
     image: postgres:11
     container_name: ps_files_hash
     # restart: always
-    environment:
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     env_file:
       - .env
     ports:
