@@ -1,10 +1,9 @@
-alembic
-autopep8
-flake8-isort
+#alembic
+#autopep8
+#flake8-isort
 python-dotenv
 pandas
 pathlib
-pip-tools
 psycopg2
 sqlalchemy
-sqlalchemy_utils
+#sqlalchemy_utils
