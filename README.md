@@ -1,33 +1,53 @@
 # find_duplicated_files
 
-### Set up python virtual env:
+## Use case
+Python script to avoid duplicated files, when we have files on :
+- local hard drive
+- USB stick
+- external hard drive
+- smartphone
+- ...
+
+The script can :
+- find duplicated files in a folder
+- copy recursively files from folder_A to folder_B, ignoring files that already in folder_B (or any sub folder)
+
+How does it works ?  
+Use case = copy recursively files from folder_A to folder_B
+- The script first create a database with (file path, size, md5, sha1) for all files in folder_B
+- Then for all files in folder_A : compare (size, md5, sha1) to the database. If it finds a match in the database, the file is skipped. Otherwise copy to folder_B
+
+## Set up
+**python dependencies :**
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Set up the environment variables
+**Environment variables :**
+
 Create a file named `.env` with the following variables, and change the values:
 - POSTGRES_PASSWORD : the password to create / access the postgres db
-- FOLDER_DOCUMENTS : the path to the folder where you want to find duplicated files
 - TRASH_FOLDER : where to move the duplicated files
 
 example :
 ```
 POSTGRES_PASSWORD=your_postgres_password
-FOLDER_DOCUMENTS='/home/user/Documents/some_folder'
 TRASH_FOLDER='/tmp/trash_folder'
 ```
 
-### Set up Postgres database
+**Postgres database :**
 ```bash
 docker-compose up -d
 ```
 
-### Run
+
+## Run
 ```bash
 python main.py
 ```
 
-And check result in postgres database
+
+## TODO
+- Use argparse
+- Use logger
+- Use sqlalchemy to manage database structure / queries
