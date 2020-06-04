@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
-
 import os
-from time import time
-import pandas as pd
 import traceback
+from ctypes import c_ulong
+from time import time
+from typing import List
+from typing import Optional
+from typing import Tuple
+
+import pandas as pd
+from numpy import base_repr
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from typing import Optional, Tuple, List
 
-from src.io_files.hash_functions import HASH_FUNCTIONS, FileHashManager
+from src.io_files.hash_functions import FileHashManager
+from src.io_files.hash_functions import HASH_FUNCTIONS
 
 
 class DbCacheManager:
-
     def __init__(self, hash_gen: FileHashManager):
         super(DbCacheManager, self).__init__()
         self.hash_gen = hash_gen
@@ -27,11 +31,11 @@ class DbCacheManager:
             return df_table
         return self._create_db_cache()
 
-    def find_file(self, file_path: str, hash_generator: FileHashManager) -> Tuple[str, str]:
+    def find_file(
+        self, file_path: str, hash_generator: FileHashManager
+    ) -> Tuple[str, str]:
         file_hash_info = hash_generator.get_hashs_for_file(file_path)
-        query = ' and '.join([
-            f"{k} == {v!r}" for k, v in file_hash_info.items()
-        ])
+        query = " and ".join([f"{k} == {v!r}" for k, v in file_hash_info.items()])
         existing_file = self.db_cache.query(query)
 
         if existing_file.shape[0] > 0:
@@ -42,20 +46,20 @@ class DbCacheManager:
     def find_duplicated_files(self) -> Tuple[List[str], pd.DataFrame]:
         df_files_info = self.read_or_create_cache()
 
-        keys = ['size'] + list(HASH_FUNCTIONS.keys())
+        keys = ["size"] + list(HASH_FUNCTIONS.keys())
         df_duplicated = df_files_info[df_files_info.duplicated(subset=keys)]
-        self.save_to_db(df_duplicated, 'duplicated_files')
+        self.save_to_db(df_duplicated, "duplicated_files")
 
         return keys, df_duplicated
 
     def save_to_db(self, df: pd.DataFrame, table_name: str) -> None:
         try:
-            df.to_sql(table_name, self.engine, if_exists='replace', index=False)
+            df.to_sql(table_name, self.engine, if_exists="replace", index=False)
             self._update_db_metadata()
         except Exception as e:
             traceback.print_tb(e.__traceback__)
             print(e)
-            df.to_csv(table_name + '.csv', index=False)
+            df.to_csv(table_name + ".csv", index=False)
 
     def _try_read_from_db(self) -> Optional[pd.DataFrame]:
         if self.table_name in self.tables:
@@ -63,7 +67,7 @@ class DbCacheManager:
         return None
 
     def _create_db_cache(self) -> pd.DataFrame:
-        print('Create cache from folder', self.data_folder)
+        print("Create cache from folder", self.data_folder)
 
         file_hash_manager = FileHashManager(self.data_folder)
         df_files_info = pd.DataFrame(file_hash_manager.generate_file_records())
@@ -106,7 +110,9 @@ class DbCacheManager:
             db_user = os.getenv("POSTGRES_USER", "postgres")
             db_pwd = os.getenv("POSTGRES_PASSWORD")
             db_host = os.getenv("POSTGRES_HOST", "localhost")
-            self._engine = create_engine(f"postgresql://{db_user}:{db_pwd}@{db_host}:5432/postgres")
+            self._engine = create_engine(
+                f"postgresql://{db_user}:{db_pwd}@{db_host}:5432/postgres"
+            )
         return self._engine
 
     @property

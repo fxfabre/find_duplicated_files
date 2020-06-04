@@ -12,7 +12,8 @@ The script can :
 - find duplicated files in a folder
 - copy recursively files from folder_A to folder_B, ignoring files that already in folder_B (or any sub folder)
 
-How does it works ?  
+How does it works ?
+
 Use case = copy recursively files from folder_A to folder_B
 - The script first create a database with (file path, size, md5, sha1) for all files in folder_B
 - Then for all files in folder_A : compare (size, md5, sha1) to the database. If it finds a match in the database, the file is skipped. Otherwise copy to folder_B

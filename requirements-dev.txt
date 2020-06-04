@@ -2,4 +2,4 @@
 
 pip-tools
 jupyterlab
-
+pre-commit

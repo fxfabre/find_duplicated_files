@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-
-import os
 import hashlib
-from typing import Iterable, Dict
+import os
+from typing import Dict
+from typing import Iterable
+
 from src.io_files import io_wrappers
 
 SIZE_READ = 1024 * 1024
 
-HASH_FUNCTIONS = {'md5': hashlib.md5, 'sha256': hashlib.sha256}
+HASH_FUNCTIONS = {"md5": hashlib.md5, "sha256": hashlib.sha256}
 
 
 class FileHashManager:
@@ -26,10 +27,10 @@ class FileHashManager:
     def create_record(self, folder: str, file_name: str) -> Dict:
         file_path = os.path.join(folder, file_name)
         hash_info = self.get_hashs_for_file(file_path)
-        return dict({
-            'name': file_name,
-            'folder': os.path.relpath(folder, self.data_folder),
-        }, **hash_info)
+        return dict(
+            {"name": file_name, "folder": os.path.relpath(folder, self.data_folder)},
+            **hash_info
+        )
 
     @classmethod
     def get_hashs_for_file(cls, file_path):
@@ -45,5 +46,5 @@ def get_hashs_for_file(file_path):
 
     return dict(
         {hash_name: hash_func.hexdigest() for hash_name, hash_func in hashs.items()},
-        size=os.path.getsize(file_path)
+        size=os.path.getsize(file_path),
     )

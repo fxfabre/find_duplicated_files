@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-
 import os
 import shutil
 
 from src.db_cache.db_cache_manager import DbCacheManager
-from src.io_files import io_wrappers
 from src.io_files import hash_functions
+from src.io_files import io_wrappers
 
 
 def copy_recursive(folder_src: str, folder_dst: str):
@@ -87,20 +86,20 @@ def delete_duplicated_files(folder: str):
     db_cache_manager = DbCacheManager(folder)
     keys, df_duplicated = db_cache_manager.find_duplicated_files()
 
-    df_duplicated['name_len'] = -df_duplicated['name'].map(len)
-    df_duplicated['folder_len'] = df_duplicated['folder'].map(len)
+    df_duplicated["name_len"] = -df_duplicated["name"].map(len)
+    df_duplicated["folder_len"] = df_duplicated["folder"].map(len)
 
     trash_folder = os.getenv("TRASH_FOLDER", os.path.join(folder, "duplicated"))
 
     for files_info, sub_df in df_duplicated.groupby(keys):
-        sub_df = sub_df.sort_values(['folder_len', 'name_len'])
+        sub_df = sub_df.sort_values(["folder_len", "name_len"])
         for idx, row in sub_df.iloc[1:, :].iterrows():
-            source_path = os.path.join(folder, row['folder'], row['name'])
-            target_path = os.path.join(trash_folder, row['folder'], row['name'])
+            source_path = os.path.join(folder, row["folder"], row["name"])
+            target_path = os.path.join(trash_folder, row["folder"], row["name"])
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
 
             print("move", source_path, target_path)
             shutil.move(source_path, target_path)
 
-    print('duplicated :')
+    print("duplicated :")
     print(df_duplicated)

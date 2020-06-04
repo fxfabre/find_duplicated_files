@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-
+import filecmp
 import os
 import shutil
-import filecmp
 
 
 def is_hidden_system_file(basename: str) -> bool:
@@ -20,7 +19,7 @@ def files_equals(source_path, target_path):
 
 def remove_folder(root: str):
     print(f"Remove empty folder {root}")
-    os.rmdir(root)      # will fail if folder not empty
+    os.rmdir(root)  # will fail if folder not empty
 
 
 def iter_on_files(folder: str):
@@ -33,7 +32,6 @@ def iter_on_files(folder: str):
 
 
 class FileManager:
-
     def __init__(self):
         super(FileManager, self).__init__()
         self._moved = 0

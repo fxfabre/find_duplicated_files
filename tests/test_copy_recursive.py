@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
-
 import os
 import shutil
-from unittest import mock, TestCase
-from sqlalchemy import create_engine
 from tempfile import mkdtemp
+from unittest import mock
+from unittest import TestCase
+
+from sqlalchemy import create_engine
 
 from src.files_cleaners import copy_recursive
 
 
 class TestCopyResursive(TestCase):
-
     def setUp(self) -> None:
         super(TestCopyResursive, self).setUp()
-        self.engine = create_engine("sqlite://")    # in-memory database
+        self.engine = create_engine("sqlite://")  # in-memory database
         self.test_folder = mkdtemp()
         self.folder_src = os.path.join(self.test_folder, "folder_src")
         self.folder_dst = os.path.join(self.test_folder, "folder_dst")
 
-        patch_func = 'src.db_cache.db_cache_manager.create_engine'
+        patch_func = "src.db_cache.db_cache_manager.create_engine"
         self.patch_query = mock.patch(patch_func, lambda _: self.engine)
         self.patch_query.start()
         self.addCleanup(self.patch_query.stop)
@@ -59,7 +59,7 @@ class TestCopyResursive(TestCase):
             f.write("file2" * 50000)
         with open(os.path.join(subfolder3, "file5.txt"), "w") as f:
             f.write("file5" * 50000)
-        
+
         return self.list_files_in_folder(self.folder_dst)
 
     def list_files_in_folder(self, folder_path):
@@ -80,11 +80,11 @@ class TestCopyResursive(TestCase):
 
         all_files = self.list_files_in_folder(self.folder_dst)
         expected_files = {
-            'subfolder1/file1.txt',
-            'subfolder1/file3.txt',
-            'subfolder1/file3_1.txt',
-            'subfolder2/file4.txt',
-            'subfolder3/file2.txt',
-            'subfolder3/file5.txt',
+            "subfolder1/file1.txt",
+            "subfolder1/file3.txt",
+            "subfolder1/file3_1.txt",
+            "subfolder2/file4.txt",
+            "subfolder3/file2.txt",
+            "subfolder3/file5.txt",
         }
         self.assertEqual(all_files, expected_files, all_files)
