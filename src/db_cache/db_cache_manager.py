@@ -10,8 +10,10 @@ from typing import Tuple
 import pandas as pd
 from numpy import base_repr
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
+from . import Base
+from . import Folders
 from src.io_files.hash_functions import FileHashManager
 from src.io_files.hash_functions import HASH_FUNCTIONS
 
@@ -20,16 +22,22 @@ class DbCacheManager:
     def __init__(self, hash_gen: FileHashManager):
         super(DbCacheManager, self).__init__()
         self.hash_gen = hash_gen
-        self._engine = None
+        self._session_maker = None
         self._table_name = None
-        self.metadata = declarative_base().metadata
         self._db_cache = None
+        self._metadata = None
+        self._engine = None
+        self._set_up_db()
+
+    def _set_up_db(self):
+        self._metadata = Base.metadata
+        self._metadata.create_all(self.engine)
 
     def read_or_create_cache(self) -> pd.DataFrame:
         df_table = self._try_read_from_db()
-        if df_table:
-            return df_table
-        return self._create_db_cache()
+        if df_table is None:
+            return self._create_db_cache()
+        return df_table
 
     def find_file(
         self, file_path: str, hash_generator: FileHashManager
@@ -77,31 +85,30 @@ class DbCacheManager:
         return df_files_info
 
     def _update_db_metadata(self) -> None:
-        if not self.metadata.is_bound():
-            self.metadata.bind = self.engine
-        self.metadata.reflect()
+        if not self._metadata.is_bound():
+            self._metadata.bind = self.engine
+        self._metadata.reflect()
 
     @property
     def table_name(self) -> str:
-        def hash36(n) -> str:
-            n, r = divmod(n, 36)
-            v = "0123456789abcdefghijklmnopqrstuvwxyz"
-            return hash36(n) + v[r] if n > 0 else v[r]
+        if self._table_name:
+            return self._table_name
 
-        if "folders" not in self.tables:
-            self._table_name = hash36(hash(self.data_folder))
-        elif self._table_name is None:
-            query = f"""
-                SELECT table_name
-                FROM folders
-                WHERE folder_name = {self.data_folder!r}
-            """
-            results = self.engine.execute(query).fetchone().values()
-            if len(results) == 0:
-                self._table_name = hash36(hash(self.data_folder))
-            else:
-                self._table_name = results[0]
-        # TODO : insert into folders
+        db_folder: Folders = self.session.query(Folders).filter_by(
+            folder_name=self.data_folder
+        ).first()
+        if db_folder is None:
+            hash_value = hash(self.data_folder)
+            hash_value = hash_value if hash_value >= 0 else c_ulong(hash_value).value
+            db_folder = Folders(
+                folder_name=self.data_folder, table_name=base_repr(hash_value, 36)
+            )
+
+            session = self.session
+            session.add(db_folder)
+            session.commit()
+
+        self._table_name = db_folder.table_name
         return self._table_name
 
     @property
@@ -117,9 +124,9 @@ class DbCacheManager:
 
     @property
     def tables(self):
-        if not self.metadata.is_bound():
+        if not self._metadata.is_bound():
             self._update_db_metadata()
-        return self.metadata.tables
+        return self._metadata.tables
 
     @property
     def data_folder(self) -> str:
@@ -130,3 +137,9 @@ class DbCacheManager:
         if self._db_cache is None:
             self._db_cache = self.read_or_create_cache()
         return self._db_cache
+
+    @property
+    def session(self):
+        if self._session_maker is None:
+            self._session_maker = sessionmaker(bind=self.engine)
+        return self._session_maker()
