@@ -22,3 +22,13 @@ repos:
     rev: stable
     hooks:
     - id: black
+
+  - repo: https://github.com/atugushev/pip-tools
+    rev:  b8130a0c1ca5379334c8be21074f9c15cc54d035
+    hooks:
+    - id: pip-compile
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 59cd94e8ba89a21bd66d85eb673d644badd82571
+    hooks:
+    - id: bandit
