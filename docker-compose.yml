@@ -10,4 +10,4 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - $PWD/data_postgres/postgres:/var/lib/postgresql/data
+      - ~/Documents/databases/files_hash/postgres:/var/lib/postgresql/data

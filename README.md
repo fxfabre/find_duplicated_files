@@ -1,5 +1,9 @@
 # find_duplicated_files
 
+TODO : see
+- https://github.com/pixelb/fslint
+- https://github.com/arsenetar/dupeguru
+
 ## Use case
 Python script to avoid duplicated files, when we have files on :
 - local hard drive
