@@ -11,6 +11,8 @@ import pandas as pd
 from numpy import base_repr
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy_utils.functions import create_database
+from sqlalchemy_utils.functions import database_exists
 
 from . import Base
 from . import Folders
@@ -31,7 +33,10 @@ class DbCacheManager:
 
     def _set_up_db(self):
         self._metadata = Base.metadata
-        self._metadata.create_all(self.engine)
+        self.engine.connect().execution_options(autocommit=True)
+        if not database_exists(url=self.engine.url):
+            create_database(url=self.engine.url, encoding="utf8")
+        self._metadata.create_all(self.engine, checkfirst=True)
 
     def read_or_create_cache(self) -> pd.DataFrame:
         df_table = self._try_read_from_db()
