@@ -4,7 +4,7 @@ import os
 from typing import Dict
 from typing import Iterable
 
-from src.io_files import io_wrappers
+from find_duplicated_files.io_files import io_wrappers
 
 SIZE_READ = 1024 * 1024
 

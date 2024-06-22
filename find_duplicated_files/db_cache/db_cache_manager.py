@@ -16,8 +16,8 @@ from sqlalchemy_utils.functions import database_exists
 
 from . import Base
 from . import Folders
-from src.io_files.hash_functions import FileHashManager
-from src.io_files.hash_functions import HASH_FUNCTIONS
+from find_duplicated_files.io_files.hash_functions import FileHashManager
+from find_duplicated_files.io_files.hash_functions import HASH_FUNCTIONS
 
 
 class DbCacheManager:

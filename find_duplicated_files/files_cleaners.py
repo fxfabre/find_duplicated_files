@@ -2,9 +2,9 @@
 import os
 import shutil
 
-from src.db_cache.db_cache_manager import DbCacheManager
-from src.io_files import hash_functions
-from src.io_files import io_wrappers
+from find_duplicated_files.db_cache.db_cache_manager import DbCacheManager
+from find_duplicated_files.io_files import hash_functions
+from find_duplicated_files.io_files import io_wrappers
 
 
 def copy_recursive(folder_src: str, folder_dst: str):

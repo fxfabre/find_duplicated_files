@@ -1,0 +1,6 @@
+[flake8]
+max-line-length = 100
+exclude = build/*, dist/*, pip_tools.egg-info/*, piptools/_compat/*, .tox/*, .venv/*, .git/*, .eggs/*
+ignore = E203, E231, E266, E501, W503, F403, E401, F401
+max-complexity = 18
+select = B,C,E,F,W,T4,B9

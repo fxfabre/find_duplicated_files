@@ -9,7 +9,7 @@ from unittest import TestCase
 from freezegun import freeze_time
 from sqlalchemy import create_engine
 
-from src.files_cleaners import copy_recursive
+from find_duplicated_files.files_cleaners import copy_recursive
 
 
 class TestCopyResursive(TestCase):
@@ -20,7 +20,7 @@ class TestCopyResursive(TestCase):
         self.folder_src = os.path.join(self.test_folder, "folder_src")
         self.folder_dst = os.path.join(self.test_folder, "folder_dst")
 
-        patch_func = "src.db_cache.db_cache_manager.create_engine"
+        patch_func = "find_duplicated_files.db_cache.db_cache_manager.create_engine"
         self.patch_query = mock.patch(patch_func, lambda _: self.engine)
         self.patch_query.start()
         self.addCleanup(self.patch_query.stop)

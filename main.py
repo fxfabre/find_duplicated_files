@@ -4,7 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from src.files_cleaners import copy_recursive
+from find_duplicated_files.files_cleaners import copy_recursive
 
 
 def main():
