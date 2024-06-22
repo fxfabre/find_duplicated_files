@@ -53,7 +53,7 @@ class FileManager:
                 return
 
             if date is None:
-                date = datetime.now().strftime("%Y%m%d")
+                date = datetime.utcnow().date().isoformat()
                 target_path = f"{name}_{date}{ext}"
             elif suffix is None:
                 suffix = 1
