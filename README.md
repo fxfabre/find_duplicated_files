@@ -1,6 +1,7 @@
 # find_duplicated_files
 
 TODO : see
+- http://www.jdupes.com : find duplicated files
 - https://github.com/pixelb/fslint
 - https://github.com/arsenetar/dupeguru
 
