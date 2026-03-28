@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-numpy==1.18.3             # via pandas
+numpy==1.22.0             # via pandas
 pandas==1.0.3             # via find_duplicated_files (setup.py)
 pathlib==1.0.1            # via find_duplicated_files (setup.py)
 psycopg2==2.8.5           # via find_duplicated_files (setup.py)
